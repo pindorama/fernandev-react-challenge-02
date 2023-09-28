@@ -15,23 +15,69 @@ import { useState } from 'react';
 // todo - Mostre um alerta caso o login seja efetuado com sucesso (javascript alert). Investigue a função login() para entender como ter sucesso na requisição.
 
 export default function LoginForm() {
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+});
+const [error,setError] = useState(null);
+const [isRequesting, setRequesting] = useState(false);
+
+ const handleInputChange = (event) => {
+ 
+  const {name, value} = event.target;
+  setFormData({...formData, [name]: value});
+};
+
+const isFormValid = formData.email.length > 0 || formData.password.length > 6;
+
+ const handelSubmit = () => {
+  setError(null);
+  setRequesting(true);
+  let values = { email: formData.email, password: formData.password };
+ login(values)
+ .then(()=>{
+  alert('congratulations');
+
+ })
+ .catch((error) => {
+  alert('e-mail or password wrong.');
+
+  setError(error);
+  }).finally(() => {
+    setRequesting(false);
+  });
+
+  };
+
+
   return (
+
     <div className='wrapper'>
       <div className='login-form'>
         <h1>Login Form 🐞</h1>
+        
         {/* Coloque a mensagem de erro de login na div abaixo. Mostre a div somente se houver uma mensagem de erro. */}
-        <div className='errorMessage'></div>
+        {error && <div className='errorMessage'>{error.message}</div>}
+       
         <div className='row'>
           <label htmlFor={'email'}>Email</label>
-          <input id={'email'} type={'email'} autoComplete='off' />
+          <input 
+          value={formData.email}
+           onChange={handleInputChange} 
+           name= "email"
+          type={'email'}
+            id={'email'}
+              autoComplete='off' />
         </div>
+       
         <div className='row'>
           <label htmlFor={'password'}>Password</label>
-          <input id={'password'} type={'password'} />
+          <input value={formData.password} onChange={handleInputChange}  name= "password" id={'password'} type={'password'} />
         </div>
 
         <div className='button'>
-          <button>Login</button>
+          <button type="submit" disabled={!isFormValid || isRequesting} onClick={handelSubmit} >Login</button>
         </div>
       </div>
     </div>
